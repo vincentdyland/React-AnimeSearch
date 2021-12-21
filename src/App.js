@@ -1,23 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
-
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Sidebar from "./components/Sidebar";
+import MainContent from "./components/MainContent";
+import { useState, useEffect } from "react";
 function App() {
+  const [animeList, setAnimeList] = useState([]);
+  const [topAnime, setTopAnime] = useState([]);
+  const [search, setSearch] = useState("");
+
+  const getTopAnime = async () => {
+    const resp = await fetch(
+      "https://api.jikan.moe/v3/top/anime/1/bypopularity"
+    ).then((res) => res.json());
+    setTopAnime(resp.top.slice(0, 9));
+  };
+
+  const getListAnime = async () => {
+    const resp = await fetch(
+      "https://api.jikan.moe/v3/top/anime/1/bypopularity"
+    ).then((res) => res.json());
+    setAnimeList(resp.top);
+  };
+
+  useEffect(() => {
+    getTopAnime();
+    getListAnime();
+  }, []);
+
+  const HandleSearch = (e) => {
+    e.preventDefault();
+    FetchAnime(search);
+  };
+
+  const FetchAnime = async (query) => {
+    const temp = await fetch(
+      `https://api.jikan.moe/v3/search/anime?q=${query}&order_by=title&sort=asc&limit=10`
+    ).then((res) => res.json());
+    setAnimeList(temp.results);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="main">
+        <Header />
+        <div className="content-wrap">
+          <Sidebar topAnime={topAnime} />
+          <MainContent
+            HandleSearch={HandleSearch}
+            search={search}
+            setSearch={setSearch}
+            animeList={animeList}
+          />
+        </div>
+        <Footer />
+      </div>
     </div>
   );
 }
