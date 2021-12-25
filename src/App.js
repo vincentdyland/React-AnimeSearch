@@ -3,10 +3,16 @@ import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import MainContent from "./components/MainContent";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 function App() {
   const [animeList, setAnimeList] = useState([]);
   const [topAnime, setTopAnime] = useState([]);
   const [search, setSearch] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const getTopAnime = async () => {
     const resp = await fetch(
